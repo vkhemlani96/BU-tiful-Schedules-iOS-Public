@@ -1,0 +1,31 @@
+PODS:
+  - Alamofire (4.0.0-beta.2)
+  - Kanna (2.0.0)
+
+DEPENDENCIES:
+  - Alamofire (from `https://github.com/Alamofire/Alamofire.git`, branch `swift3`)
+  - Kanna (from `https://github.com/tid-kijyun/Kanna.git`, branch `swift3.0`)
+
+EXTERNAL SOURCES:
+  Alamofire:
+    :branch: swift3
+    :git: https://github.com/Alamofire/Alamofire.git
+  Kanna:
+    :branch: swift3.0
+    :git: https://github.com/tid-kijyun/Kanna.git
+
+CHECKOUT OPTIONS:
+  Alamofire:
+    :commit: 680690beaa7abf9578487688de4d24d038f679b5
+    :git: https://github.com/Alamofire/Alamofire.git
+  Kanna:
+    :commit: 109249451c32e14dac541bfbfeaa91b4dcb47a87
+    :git: https://github.com/tid-kijyun/Kanna.git
+
+SPEC CHECKSUMS:
+  Alamofire: 7f837be535fe424db2b87d9117f13836939719ca
+  Kanna: 8d60d86a3580f7dee732811e5163a5e3e41a32a7
+
+PODFILE CHECKSUM: adcbb784612e6d0a745e8f6c05d6b8836430b90e
+
+COCOAPODS: 1.0.0
