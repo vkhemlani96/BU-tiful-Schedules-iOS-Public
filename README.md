@@ -22,4 +22,4 @@ View the demo video [here](BUtiful Schedules.mov)!
 * Branded logo
 * Sharing functionality
 
-*Some files intentionally omitted from repository.*
+*Some files intentionally omitted from this repository.*
