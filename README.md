@@ -7,13 +7,15 @@ BU-tiful Schedules is the future of Boston University’s class registration pro
 
 Upon choosing a schedule, the application displays more information about each class including the specific section numbers, professor names and class locations. At this point, the user can save the graphical view of the schedule to their phone and even add the classes to their Boston University Semester Planner in one click!
 
-**Key Features**
+View the demo video [here](BUtiful Schedules.mov)!
+
+##Key Features
 * **Computes possible schedules for 5 classes (university average is between 4 and 5) in less than .2 seconds on an iPhone 7**
 * Downloads course information for each course in parallel
 * Uploads to student's university planner in one-click
 * Ability to save graphical schedule right to phone
 
-**Future Enhancements**
+##Future Enhancements
 * Autocompletion for schools/departments
 * Additional filtering
 * Indications for classes with few seats/full
