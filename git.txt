@@ -1,2 +1,0 @@
-git remote add origin https://github.com/vkhemlani96/BU-tiful-Schedules-iOS-Public.git
-git push -u origin master
