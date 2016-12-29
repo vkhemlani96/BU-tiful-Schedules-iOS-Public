@@ -19,11 +19,13 @@ class ClassDaysTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Iterate through class days and show checkmark depending of if filter is already set
-        for i in 0..<5 {
-            if !parentController!.parentController!.classDays[i] {
-                tableView.cellForRow(at: IndexPath(row: i, section: 0))?.accessoryType = UITableViewCellAccessoryType.none
-            }
+        for day in FilterManager.DAYS_FILTER.noClassesOn {
+            tableView.cellForRow(at: IndexPath(row: day - 1, section: 0))?.accessoryType = UITableViewCellAccessoryType.checkmark
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "No Classes On:"
     }
 
     override func didReceiveMemoryWarning() {
@@ -32,11 +34,23 @@ class ClassDaysTableViewController: UITableViewController {
     
     // Toggle checkmark and filter value on select
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.cellForRow(at: indexPath)?.accessoryType =
-            tableView.cellForRow(at: indexPath)?.accessoryType == UITableViewCellAccessoryType.checkmark ? UITableViewCellAccessoryType.none : UITableViewCellAccessoryType.checkmark
+        
+        if let cell = tableView.cellForRow(at: indexPath) {
+            FilterManager.adjustedFilteringParameters()
+            
+            let currentlyUnchecked = cell.accessoryType == UITableViewCellAccessoryType.none
+            
+            if currentlyUnchecked {
+                FilterManager.DAYS_FILTER.noClassesOn.insert(indexPath.row + 1)   // Add one for sunday
+                cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            } else {
+                FilterManager.DAYS_FILTER.noClassesOn.remove(indexPath.row + 1)     // Add one for sunday
+                cell.accessoryType = UITableViewCellAccessoryType.none
+            }
+        }
+        
         tableView.reloadRows(at: [indexPath], with: .none)
         
-        parentController!.parentController!.classDays[(indexPath as NSIndexPath).row] = !parentController!.parentController!.classDays[(indexPath as NSIndexPath).row]
     }
     
 

@@ -1,10 +1,12 @@
 PODS:
   - Alamofire (4.0.0-beta.2)
   - Kanna (2.0.0)
+  - PopupDialog (0.5.0)
 
 DEPENDENCIES:
   - Alamofire (from `https://github.com/Alamofire/Alamofire.git`, branch `swift3`)
   - Kanna (from `https://github.com/tid-kijyun/Kanna.git`, branch `swift3.0`)
+  - PopupDialog (~> 0.5)
 
 EXTERNAL SOURCES:
   Alamofire:
@@ -25,7 +27,8 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Alamofire: 7f837be535fe424db2b87d9117f13836939719ca
   Kanna: 8d60d86a3580f7dee732811e5163a5e3e41a32a7
+  PopupDialog: 9890441b81105b9076757af2afe2b037be682f3e
 
-PODFILE CHECKSUM: adcbb784612e6d0a745e8f6c05d6b8836430b90e
+PODFILE CHECKSUM: 0cdcc381d76d7b5015cc98f87a85c319a97c025c
 
 COCOAPODS: 1.0.0

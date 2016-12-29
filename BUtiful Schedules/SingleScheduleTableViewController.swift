@@ -10,15 +10,8 @@ import UIKit
 
 class SingleScheduleTableViewController: UITableViewController {
     
-    var schedule : Schedule?
-    var index = 0
-    var parentController : DetailedScheduleViewController?
-
-    override func viewDidAppear(_ animated: Bool) {
-        parentController!.index = self.index
-        parentController!.navigationController?.isToolbarHidden = false
-    }
-
+    var schedule : Leaf?
+    
     // Rows contained in one section
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -26,7 +19,8 @@ class SingleScheduleTableViewController: UITableViewController {
 
     // Return number of rows representing courses plus one for the picture
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return schedule!.courseCount + 1
+        print(schedule!.getDaysCount(), schedule!.getAvgDayLength(), schedule!.getDowntime(), schedule!.getStartTimeSpread(), schedule!.getAvgStartTime())
+        return schedule!.getCourseCount() + 1
     }
     
     //
@@ -40,7 +34,7 @@ class SingleScheduleTableViewController: UITableViewController {
         }
         
         //
-        let x = CGFloat(schedule!.getSections()[(indexPath as NSIndexPath).row-1].count)
+        let x = CGFloat(schedule!.getTimeBlocks()[(indexPath as NSIndexPath).row-1].getSections().count)
         return 19.5 + 9 + 17.5*x + 16
     }
     
@@ -56,50 +50,48 @@ class SingleScheduleTableViewController: UITableViewController {
                 cell.activityIndicator.isHidden = true
                 cell.activityIndicator.stopAnimating()
             } else {
-                // If not, show the loading indicator and download the image
-                cell.activityIndicator.startAnimating()
-                schedule!.downloadImage({ ()->Void in
-                    DispatchQueue.main.async(execute: { () -> Void in
-                        
-                        // Reload the cell once the image loads
-                        self.tableView!.beginUpdates()
-                        if let t = self.tableView {
-                            t.reloadRows(at: [indexPath], with: UITableViewRowAnimation.fade)
-                        }
-                        self.tableView!.endUpdates()
-                    })
-                })
+                print("ERROR---------\t\tImage not found")
             }
             return cell
         }
         
         // If cell is not for the image
         let cell = tableView.dequeueReusableCell(withIdentifier: "detailCell", for: indexPath) as! ScheduleDetailTableViewCell
-        let sections = schedule!.getSections()[(indexPath as NSIndexPath).row-1] //-1 offset for image cell
+        //let sections = schedule!.getSections()[(indexPath as NSIndexPath).row-1] //-1 offset for image cell
         
-        var showTitle = true    // Course name
-        
-        if ((indexPath as NSIndexPath).row > 1) {
-            // If the previous section is a part of the same course, hide the course title
-            let lastSection = schedule!.getSections()[(indexPath as NSIndexPath).row-2]
-            showTitle = lastSection[0][0] != sections[0][0]
+        var typeIndex = (indexPath as NSIndexPath).row-1
+        var courseIndex = 0
+        var course = CourseList.COURSES[CourseList.COURSE_IDS[0]]
+        while typeIndex >= course!.getSectionTypes().count {
+            typeIndex = typeIndex - course!.getSectionTypes().count
+            courseIndex += 1
+            course = CourseList.COURSES[CourseList.COURSE_IDS[courseIndex]]
         }
+        let typeName = course!.getSectionTypes()[typeIndex]
+        let courseID = CourseList.COURSE_IDS[courseIndex]
+        
+        let showTitle = typeIndex == 0
+        
+        let block = schedule!.getData()[courseID]![typeName]!.timeBlock
         
         // Show/hide the title
         if showTitle {
-            cell.titleView.text = sections[0][0]
+            cell.titleView.text = courseID
         } else {
             cell.titleView.isHidden = true
         }
         
+        cell.sectionColor.backgroundColor = ScheduleImageHelper.getColor(i: block.getSectionType().getColorIndex())
+        
         // Show Discussion, Lecture, Lab, etc.
-        cell.detailSubtitleView.text = schedule!.getSectionTypes()[(indexPath as NSIndexPath).row-1]
+        cell.detailSubtitleView.text = typeName
         
         // Display up to three sections
         let views = [cell.detail1View, cell.detail2View, cell.detail3View]
-        for i in 0..<sections.count {
+        let count = block.getSections().count > 3 ? 3 : block.getSections().count
+        for i in 0..<count {
             
-            let section = sections[i]
+            let section = block.getSections()[i]
             let view = views[i]
             
             // Concat text in the form of "A1: Idson, STO B50, 250 Seats
@@ -126,13 +118,14 @@ class SingleScheduleTableViewController: UITableViewController {
         }
         
         // If there are less than three sections, hide the rest of the views.
-        for i in sections.count..<3 {
+        for i in count..<3 {
             views[i]?.isHidden = true
         }
 
         return cell
     }
-    
-    
-
 }
+
+
+
+

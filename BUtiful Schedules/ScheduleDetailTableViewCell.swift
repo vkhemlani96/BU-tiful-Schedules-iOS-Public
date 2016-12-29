@@ -21,4 +21,6 @@ class ScheduleDetailTableViewCell: UITableViewCell {
     @IBOutlet weak var detail2View: UILabel!
     @IBOutlet weak var detail3View: UILabel!
     
+    // Changes color to match course in the schedule image
+    @IBOutlet weak var sectionColor: UIView!
 }

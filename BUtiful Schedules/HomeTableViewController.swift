@@ -167,6 +167,7 @@ class HomeTableViewController: UITableViewController {
             
             // Valid data is present in rows of fourth table present on page
             // Mark as invalid if data not found
+            
             if (doc.css("body > table").nodeSetValue.count < 3 || doc.css("body > table")[3].css("tr").nodeSetValue.count == 0) {
                 print("did not find sections")
                 courseFields[viewIndex].failed()
@@ -217,13 +218,13 @@ class HomeTableViewController: UITableViewController {
             }
             
             // Parse input field at bottom of webpage for next course to search
-            var nextCourse = [
-                doc.css("input[name='College']")[0].toHTML?.regexMatches("value=\"\\w{3}")[0],
-                doc.css("input[name='Dept']")[0].toHTML?.regexMatches("value=\"\\w{2}")[0],
-                doc.css("input[name='Course']")[0].toHTML?.regexMatches("value=\"\\w{3}")[0],
-                doc.css("input[name='Section']")[0].toHTML?.regexMatches("value=\"\\w{2}")[0]
+            let nextCourseInputs = [
+                doc.css("input[name='College']")[0].toHTML?.regexMatches("value=\"\\w{3}"),
+                doc.css("input[name='Dept']")[0].toHTML?.regexMatches("value=\"\\w{2}"),
+                doc.css("input[name='Course']")[0].toHTML?.regexMatches("value=\"\\w{3}"),
+                doc.css("input[name='Section']")[0].toHTML?.regexMatches("value=\"\\w{2}")
             ]
-            nextCourse = nextCourse.map({$0?.replacingOccurrences(of: "value=\"", with: "")})
+            let nextCourse = nextCourseInputs.map({(($0?.count)! > 0 ? $0?[0] : nil)?.replacingOccurrences(of: "value=\"", with: "")})
             
             // If course has the same college, dept and number, it is the section of the same class. This means that the class didn't fit into one page (i.e. many CAS EC 101 classes) so you must parse the next page
             if let nextCourseColl = nextCourse[0], let nextCourseDept = nextCourse[1], let nextCourseSec = nextCourse[2] {

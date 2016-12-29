@@ -47,9 +47,10 @@ class DetailedScheduleViewController: UIPageViewController, UIPageViewController
     func viewControllerAtIndex(_ index: Int) -> UIViewController? {
         //first view controller = firstViewControllers navigation controller
         let v = self.storyboard!.instantiateViewController(withIdentifier: identifier) as! SingleScheduleTableViewController
-        v.schedule = parentController!.filteredSchedules![index]
-        v.parentController = self
-        v.index = index
+        v.schedule = parentController!.schedules![index]
+        
+//        v.parentController = self
+//        v.index = index
         return v
     }
     
@@ -57,7 +58,7 @@ class DetailedScheduleViewController: UIPageViewController, UIPageViewController
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         
         //if the index is the end of the array, return nil since we dont want a view controller after the last one
-        if index == parentController!.filteredSchedules!.count - 1 {
+        if index == parentController!.schedules!.count - 1 {
             return nil
         }
         
@@ -90,13 +91,13 @@ class DetailedScheduleViewController: UIPageViewController, UIPageViewController
     
     // Saved image to iPhones photo storage
     @IBAction func saveImage(_ sender: UIBarButtonItem) {
-        UIImageWriteToSavedPhotosAlbum(parentController!.filteredSchedules![index].getImage()!, nil, nil, nil)
+        UIImageWriteToSavedPhotosAlbum(parentController!.schedules![index].getImage()!, nil, nil, nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "plannerSegue" {
             let s = segue.destination as! PlannerViewController
-            s.schedule = parentController!.filteredSchedules![index]
+            s.schedule = parentController!.schedules![index]
         }
     }
     

@@ -7,11 +7,13 @@
 //
 
 import UIKit
+import PopupDialog
 
 class SchedulesViewController: UITableViewController {
     
     // Holds schedules passing through filter, initially will be set to all schedules
-    var filteredSchedules : [Schedule]?
+    var schedules : [Leaf]?
+    var lastReload = NSDate.timeIntervalSinceReferenceDate
     
     // Sets filter variables
     var classDays = [Bool](repeating: true, count: 5)
@@ -23,22 +25,24 @@ class SchedulesViewController: UITableViewController {
     var selectedIndex = 0
     
     // Initializes set of filtered schedules
-    override func awakeFromNib() {
-        if filteredSchedules == nil {
-            filteredSchedules = CourseList.SCHEDULE_LEAVES
-        }
-    }
+//    override func viewWillAppear() {
+//        if schedules == nil {
+//            schedules = FilterManager.FILTERED_SCHEDULES      //TODO CHange Leaf
+//        }
+//    }
     
     // Adjusts layout based on schedules, called upon return from other controllers
     override func viewWillAppear(_ animated: Bool) {
-        // Set title to count of schedules, will needed to be changed when return from filters controller
-        if let schedules = filteredSchedules {
-            self.title = String(schedules.count) + " Schedules Found"
+        if lastReload != FilterManager.lastFilteredAt {
+            schedules = FilterManager.FILTERED_SCHEDULES
+            tableView.reloadData()
         }
         
-        // Scroll to selected schedule, can be changed by swiping within DetailedScheduleController
-        let row = selectedIndex == 0 ? 0 : selectedIndex-1  // Go up one so that selected schedule is closer to middle of the screen
-//        tableView.scrollToRow(at: IndexPath.init(row: row, section: 0), at: UITableViewScrollPosition.middle, animated: false)
+        // Set title to count of schedules, will needed to be changed when return from filters controller
+        if let schedules = schedules {
+            self.title = "\(schedules.count) Schedules Found"
+        }
+        
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -46,7 +50,7 @@ class SchedulesViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let schedules = filteredSchedules {
+        if let schedules = schedules {
             return schedules.count
         }
         return 0
@@ -55,7 +59,39 @@ class SchedulesViewController: UITableViewController {
     // On selection of a schedule, set selectedIndex and transition to DetailedScheduleController
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedIndex = (indexPath as NSIndexPath).row
-        self.performSegue(withIdentifier: "detailsSegue", sender: self)
+        
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "popupViewController") as! PopupViewController
+        vc.setSchedule(schedule: schedules![selectedIndex])
+        
+        // Create the dialog
+        let popup = PopupDialog(viewController: vc, buttonAlignment: .horizontal, transitionStyle: .bounceUp, gestureDismissal: true, completion: nil)
+        let pv = PopupDialogDefaultView.appearance()
+        pv.layer.cornerRadius = 0
+        popup.viewController.view.frame = CGRect(x: 0, y: 0, width: 350, height: 500)
+        
+        let screenSize: CGRect = UIScreen.main.bounds
+        
+        let xImage = UIImageView(frame: CGRect(x: (screenSize.width/2)-12.5, y: screenSize.height-50, width: 25, height: 25))
+        xImage.image = UIImage(named: "Delete (White)")
+        popup.view.addSubview(xImage)
+        
+        let overlay = PopupDialogOverlayView.appearance()
+        overlay.blurRadius = 5
+        
+        let buttons = [
+            DefaultButton(title:"Save Image"){},
+            DefaultButton(title:"Add to Planner"){}
+        ]
+        DefaultButton.appearance().separatorColor = UIColor(white: 1.0, alpha:0.6)
+        DefaultButton.appearance().buttonColor = UIColor(red:0.75, green:0.00, blue:0.02, alpha:1.0)
+        DefaultButton.appearance().titleColor = UIColor.white
+        
+        
+        popup.addButtons(buttons)
+        
+        // Present dialog
+        present(popup, animated: true, completion: nil)
+        tableView.reloadRows(at: [IndexPath(row: selectedIndex, section: 0)], with: .none)
     }
     
     // Create cell for each table
@@ -67,7 +103,7 @@ class SchedulesViewController: UITableViewController {
         // Clear image of the cell (in case one was deleted and order had to be redone)
         cell.scheduleImageView.image = nil
         
-        let schedule = self.filteredSchedules![(indexPath as NSIndexPath).row]
+        let schedule = self.schedules![(indexPath as NSIndexPath).row]
         
         // If image has already been loaded, display it and stop the loading animation
         if let img = schedule.getImage() {
@@ -76,19 +112,7 @@ class SchedulesViewController: UITableViewController {
 //            cell.exclamationImage.isHidden = schedule.isEmpty()!  -  TODO
             cell.exclamationImage.isHidden = true
         } else {
-            // Otherwise, animate the loading indicator and begin downloading the image
-            cell.loadingIndicator.startAnimating()
-            
-            schedule.downloadImage({ ()->Void in
-                DispatchQueue.main.async(execute: { () -> Void in
-                    // Once downloaded, update correct row
-                    self.tableView!.beginUpdates()
-                    if let t = self.tableView {
-                        t.reloadRows(at: [indexPath], with: UITableViewRowAnimation.fade)
-                    }
-                    self.tableView!.endUpdates()
-                })
-            })
+            print("ERROR---------\t\tImage not found")
         }
         
         return cell
@@ -98,51 +122,51 @@ class SchedulesViewController: UITableViewController {
     // Filters out unwanted schedules
     func filter() {
         
-        let shouldFilter = classDays != [Bool](repeating: true, count: 5) || classTimes != [0, 23.5] || professorFilters.count > 0 || hideFull
-        // If any filter has been applied, begin filtering
-        if shouldFilter {
-            
-            let startTime : Double? = classTimes[0] == 0 ? nil : classTimes[0]
-            let endTime : Double? = classTimes[1] == 23.5 ? nil : classTimes[1]
-            let days : [Bool]? = classDays == [Bool](repeating: true, count: 5) ? nil : classDays
-            let profs : [[String]]? = professorFilters.count == 0 ? nil : professorFilters
-            
-            var filteredSchedules = [Schedule]()
-            for schedule in self.filteredSchedules! {
-                if (schedule.filter(startTime, endTime: endTime, days: days, profs: profs, hideFull: hideFull)) {
-                    filteredSchedules += [schedule]
-                }
-            }
-            
-            self.filteredSchedules = filteredSchedules
-        } else {
-            // Otherwise, display alls chedules
-            self.filteredSchedules = CourseList.SCHEDULE_LEAVES
-        }
-        
-        // Update count with new schedules
-        self.title = String(filteredSchedules!.count) + " Schedules Found"
-        
-        // Display back button with count on detailed schedules controller to indicate change
-        let backItem = UIBarButtonItem()
-        backItem.title = String(filteredSchedules!.count) + " Schedules Found"
-        navigationItem.backBarButtonItem = backItem
-        
-        // Reload all cells
-        tableView.reloadData()
+//        let shouldFilter = classDays != [Bool](repeating: true, count: 5) || classTimes != [0, 23.5] || professorFilters.count > 0 || hideFull
+//        // If any filter has been applied, begin filtering
+//        if shouldFilter {
+//            
+//            let startTime : Double? = classTimes[0] == 0 ? nil : classTimes[0]
+//            let endTime : Double? = classTimes[1] == 23.5 ? nil : classTimes[1]
+//            let days : [Bool]? = classDays == [Bool](repeating: true, count: 5) ? nil : classDays
+//            let profs : [[String]]? = professorFilters.count == 0 ? nil : professorFilters
+//            
+//            var filteredSchedules = [Leaf]()
+//            for schedule in self.filteredSchedules! {
+//                if (schedule.filter(startTime, endTime: endTime, days: days, profs: profs, hideFull: hideFull)) {
+//                    filteredSchedules += [schedule]
+//                }
+//            }
+//            
+//            self.filteredSchedules = filteredSchedules
+//        } else {
+//            // Otherwise, display alls chedules
+//            self.filteredSchedules = CourseList.SCHEDULE_LEAVES
+//        }
+//        
+//        // Update count with new schedules
+//        self.title = String(filteredSchedules!.count) + " Schedules Found"
+//        
+//        // Display back button with count on detailed schedules controller to indicate change
+//        let backItem = UIBarButtonItem()
+//        backItem.title = String(filteredSchedules!.count) + " Schedules Found"
+//        navigationItem.backBarButtonItem = backItem
+//        
+//        // Reload all cells
+//        tableView.reloadData()
     }
     
     // Handle removal of specific schedule
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Remove from filtered schedules and entire course list to not appear in current results
-            let leafId = filteredSchedules![(indexPath as NSIndexPath).row].id
+            let leafId = schedules![(indexPath as NSIndexPath).row].getID()
             CourseList.removeSchedule(leafId)
-            filteredSchedules?.remove(at: (indexPath as NSIndexPath).row)
+            schedules?.remove(at: (indexPath as NSIndexPath).row)
             
             // Fade out views and update count
             tableView.deleteRows(at: [indexPath], with: .fade)
-            self.title = String(filteredSchedules!.count) + " Schedules Found"
+            self.title = String(schedules!.count) + " Schedules Found"
             
         }
     }
@@ -176,13 +200,14 @@ class SchedulesViewController: UITableViewController {
         } else if segue.identifier == "detailsSegue" {
             // Show back button item
             let backItem = UIBarButtonItem()
-            backItem.title = String(filteredSchedules!.count)
+            backItem.title = String(schedules!.count)
             navigationItem.backBarButtonItem = backItem
             
             let s = segue.destination as! DetailedScheduleViewController
             s.parentController = self
             s.index = selectedIndex
             tableView.reloadRows(at: [IndexPath(row: selectedIndex, section: 0)], with: .none)
+            print(CourseList.SCHEDULE_LEAVES[selectedIndex].getPlannerURLs())
         }
     }
     

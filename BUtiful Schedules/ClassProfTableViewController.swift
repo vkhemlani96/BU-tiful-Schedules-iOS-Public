@@ -10,64 +10,57 @@ import UIKit
 
 class ClassProfTableViewController: UITableViewController {
     
+    var courseID = ""
     var course = Course()
     var parentController : FilterTableViewController?
     var potentials = [IndexPath: Int]()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
-
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return course.getProfessors().keys.count
+        return course.getSectionTypes().count
     }
     
     // Sections = type of class (Lecture, Discussion, Lab, etc.)
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return Array(course.getProfessors().keys)[section]
+        return course.getSectionTypes()[section]
     }
 
     // Rows = number of professors teaching type of class
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let key = Array(course.getProfessors().keys)[section];
-        let profList = course.getProfessors()[key]!.keys
-        return profList.count
+        let key = course.getSectionTypes()[section];
+        let professors = course[key].getProfessors()
+        return professors.keys.count  // Keys in professor subdictionary represent professor names
     }
 
     // Create cell for each professor
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "profCell", for: indexPath) as! ProfessorTableViewCell
-        let profs = course.getProfessors()
+        
+        print(FilterManager.PROFESSORS_FILTER.professorsToFilterOut)
         
         // Get professor name
-        let type = Array(profs.keys)[(indexPath as NSIndexPath).section]
-        let profName = Array(profs[type]!.keys)[(indexPath as NSIndexPath).row]
-        let possible = profs[type]![profName]!
+        let type = course.getSectionTypes()[(indexPath as NSIndexPath).section]
+        let typeDict = course[type].getProfessors()
+        let profName = Array(typeDict.keys)[(indexPath as NSIndexPath).row]
+        let possibleSchedules = typeDict[profName]!
         
         // Set vars needed to filter
-        cell.courseCode = course.getCourseID()
+        cell.courseCode = courseID
         cell.sectionType = type
         cell.professor = profName
         
         // If professor has any schedules available
-        if possible {
+        if possibleSchedules > 0 {
             cell.textLabel?.text = profName
             
-            let data = [course.getCourseID(), type, profName]
             // Set checkmark based on already filtered
-            if parentController!.parentController!.isProfessorFiltered(data) {
+            if let professors = FilterManager.PROFESSORS_FILTER.professorsToFilterOut[courseID]?[type], professors.contains(profName) {
                 cell.accessoryType = UITableViewCellAccessoryType.none
             } else {
                 cell.accessoryType = UITableViewCellAccessoryType.checkmark
             }
             
-            // Set count of schedules contained by professor
-            displayScheduleCount(cell, indexPath: indexPath, data: data)
+            cell.detailTextLabel?.text = "In \(possibleSchedules) Schedules"
+            
         } else {
             
             // Don't allow the user to select professors with no classes
@@ -91,22 +84,43 @@ class ClassProfTableViewController: UITableViewController {
     // On select, toggle checkmark and update cell and filters
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let cell = tableView.cellForRow(at: indexPath)! as! ProfessorTableViewCell
-        let data = [cell.courseCode, cell.sectionType, cell.professor]
-        let filtered = cell.accessoryType == UITableViewCellAccessoryType.none
+        print("toggling")
         
-        if filtered {
+        let cell = tableView.cellForRow(at: indexPath)! as! ProfessorTableViewCell
+        let alreadyFiltered = cell.accessoryType == UITableViewCellAccessoryType.none
+        
+        FilterManager.adjustedFilteringParameters()
+        
+        if alreadyFiltered {
+            FilterManager.PROFESSORS_FILTER.professorsToFilterOut[cell.courseCode]![cell.sectionType]!.remove(cell.professor)
             cell.accessoryType = UITableViewCellAccessoryType.checkmark
-            parentController!.parentController!.removeProfessorFilter(data)
         } else {
+            
+            var professorsToFilterOut = FilterManager.PROFESSORS_FILTER.professorsToFilterOut
+            
+            if var sections = professorsToFilterOut[cell.courseCode] {
+                if let _ = sections[cell.sectionType] {
+                    FilterManager.PROFESSORS_FILTER.professorsToFilterOut[cell.courseCode]![cell.sectionType]!.insert(cell.professor)
+                } else {
+                    var newSet = Set<String>()
+                    newSet.insert(cell.professor)
+                    FilterManager.PROFESSORS_FILTER.professorsToFilterOut[cell.courseCode]![cell.sectionType] = newSet
+                }
+            } else {
+                var newSet = Set<String>()
+                newSet.insert(cell.professor)
+                FilterManager.PROFESSORS_FILTER.professorsToFilterOut[cell.courseCode] = [cell.sectionType : newSet]
+            }
+            
             cell.accessoryType = UITableViewCellAccessoryType.none
-            parentController!.parentController!.professorFilters.append(data)
         }
         
         tableView.reloadRows(at: [indexPath], with: .none)
         
     }
     
+    // Consider live updating after consecutive filters
+    /*
     // Show schedule counts for each professor
     func displayScheduleCount(_ cell : UITableViewCell, indexPath: IndexPath, data: [String]) {
         cell.textLabel!.font = UIFont.systemFont(ofSize: 16.0)
@@ -117,7 +131,8 @@ class ClassProfTableViewController: UITableViewController {
         } else {
             // Otherwise, calculate it in background, show "Calculating..." in meantime, update when found a new one
             DispatchQueue.main.async(execute: { () -> Void in
-                self.potentials.updateValue(self.calculateSchedules(data), forKey: indexPath)
+//                TODO
+//                self.potentials.updateValue(self.calculateSchedules(data), forKey: indexPath)
                 
                 self.tableView!.beginUpdates()
                 self.tableView!.reloadRows(
@@ -132,7 +147,7 @@ class ClassProfTableViewController: UITableViewController {
     // Use helperfunction (calcHelper) to calculate number of schedules using professor
     fileprivate func calculateSchedules(_ data: [String]) -> Int {
         var count = 0
-        for leaf in CourseList.SCHEDULE_LEAVES {
+        for leaf in CourseList.NEW_SCHEDULE_LEAVES {
             if calcHelper(leaf.node, data: data) {
                 count += 1
             }
@@ -140,12 +155,12 @@ class ClassProfTableViewController: UITableViewController {
         return count
     }
     
-    fileprivate func calcHelper(_ n: Node, data: [String]) -> Bool {
+    fileprivate func calcHelper(_ n: CourseNode, data: [String]) -> Bool {
         
         if let val = n.value {
             let sections = val.getSections()
             // Check if section is the right type of section and course
-            if sections[0][0] == data[0] && n.value!.getSectionType() == data[1] {
+            if sections[0][0] == data[0] && n.value!.getSectionType().getName() == data[1] {
                 // Check if any time blocks have the professor, if so, return true, otherwise return false
                 for section in sections {
                     if section[2] == data[2] {
@@ -160,5 +175,6 @@ class ClassProfTableViewController: UITableViewController {
         return false
         
     }
+     */
 
 }

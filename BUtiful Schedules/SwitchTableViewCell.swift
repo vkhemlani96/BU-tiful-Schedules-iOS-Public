@@ -13,11 +13,18 @@ class SwitchTableViewCell: UITableViewCell {
     
     var filterViewController : FilterTableViewController?
     
-    @IBAction func onSwitched(_ sender: UISwitch) {
-        filterViewController?.parentController?.hideFull = sender.isOn
-        filterViewController?.parentController?.filter()
-    }
+    @IBOutlet weak var switchView: UISwitch!
     @IBOutlet weak var switchTextView: UILabel!
+    
+    var onSwitched : ((_ isOn : Bool) -> Void)?
+    
+    @IBAction func onSwitched(_ sender: UISwitch) {
+        if onSwitched != nil {
+            onSwitched!(sender.isOn)
+        }
+//        filterViewController?.parentController?.hideFull = sender.isOn
+//        filterViewController?.parentController?.filter()
+    }
 
 
 }

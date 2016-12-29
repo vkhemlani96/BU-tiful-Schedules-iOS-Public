@@ -9,8 +9,10 @@
 /* Begin PBXBuildFile section */
 		5AACFA38717C7D8882203594 /* Pods_BUtiful_Schedules.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5DB025F0E4F8FD03B1A035 /* Pods_BUtiful_Schedules.framework */; };
 		A100C6471D021C0B009F6F2C /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100C6461D021C0B009F6F2C /* SwitchTableViewCell.swift */; };
+		A101EDD11E0EF4E000E2052B /* PopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A101EDD01E0EF4E000E2052B /* PopupViewController.swift */; };
 		A12DFD291CF1476E003C4605 /* CourseList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12DFD281CF1476E003C4605 /* CourseList.swift */; };
 		A136588E1D00DA660036C7E3 /* PlannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A136588D1D00DA660036C7E3 /* PlannerViewController.swift */; };
+		A1370BA61E1055A0007C98AA /* FilterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1370BA51E1055A0007C98AA /* FilterManager.swift */; };
 		A149B5E21CF2481A00802FE2 /* TimeBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B5E11CF2481A00802FE2 /* TimeBlock.swift */; };
 		A149B5E41CF2487800802FE2 /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B5E31CF2487800802FE2 /* Course.swift */; };
 		A149B5E61CF24A7500802FE2 /* Section.swift in Sources */ = {isa = PBXBuildFile; fileRef = A149B5E51CF24A7500802FE2 /* Section.swift */; };
@@ -25,6 +27,8 @@
 		A1620BF41CEFD6C00033C5E8 /* CourseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1620BF31CEFD6C00033C5E8 /* CourseView.swift */; };
 		A19590051CF9055000B4EAE9 /* ClassTimesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19590041CF9055000B4EAE9 /* ClassTimesTableViewController.swift */; };
 		A19590071CF9057E00B4EAE9 /* ClassTimeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19590061CF9057E00B4EAE9 /* ClassTimeTableViewCell.swift */; };
+		A1B0E1F01E0F4A0300B6A83A /* SectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B0E1EF1E0F4A0300B6A83A /* SectionType.swift */; };
+		A1BD57A31E0DCA7D00AFAD6E /* ScheduleImageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BD57A21E0DCA7D00AFAD6E /* ScheduleImageHelper.swift */; };
 		A1E0BFA41CF8E45300069E16 /* FilterTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E0BFA31CF8E45300069E16 /* FilterTableViewController.swift */; };
 		A1E0BFA61CF8F24500069E16 /* ClassDaysTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E0BFA51CF8F24500069E16 /* ClassDaysTableViewController.swift */; };
 		A1E861C21CF7A80E0051B4EC /* SchedulesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E861C11CF7A80E0051B4EC /* SchedulesViewController.swift */; };
@@ -61,8 +65,10 @@
 		5B5DB025F0E4F8FD03B1A035 /* Pods_BUtiful_Schedules.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BUtiful_Schedules.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85DE13ECAE037A6593D91661 /* Pods-BUtiful Schedules.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BUtiful Schedules.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BUtiful Schedules/Pods-BUtiful Schedules.debug.xcconfig"; sourceTree = "<group>"; };
 		A100C6461D021C0B009F6F2C /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
+		A101EDD01E0EF4E000E2052B /* PopupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PopupViewController.swift; sourceTree = "<group>"; };
 		A12DFD281CF1476E003C4605 /* CourseList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CourseList.swift; sourceTree = "<group>"; };
 		A136588D1D00DA660036C7E3 /* PlannerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlannerViewController.swift; sourceTree = "<group>"; };
+		A1370BA51E1055A0007C98AA /* FilterManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterManager.swift; sourceTree = "<group>"; };
 		A149B5E11CF2481A00802FE2 /* TimeBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeBlock.swift; sourceTree = "<group>"; };
 		A149B5E31CF2487800802FE2 /* Course.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
 		A149B5E51CF24A7500802FE2 /* Section.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Section.swift; sourceTree = "<group>"; };
@@ -83,6 +89,8 @@
 		A1620BF31CEFD6C00033C5E8 /* CourseView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CourseView.swift; sourceTree = "<group>"; };
 		A19590041CF9055000B4EAE9 /* ClassTimesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassTimesTableViewController.swift; sourceTree = "<group>"; };
 		A19590061CF9057E00B4EAE9 /* ClassTimeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassTimeTableViewCell.swift; sourceTree = "<group>"; };
+		A1B0E1EF1E0F4A0300B6A83A /* SectionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionType.swift; sourceTree = "<group>"; };
+		A1BD57A21E0DCA7D00AFAD6E /* ScheduleImageHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScheduleImageHelper.swift; sourceTree = "<group>"; };
 		A1E0BFA31CF8E45300069E16 /* FilterTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterTableViewController.swift; sourceTree = "<group>"; };
 		A1E0BFA51CF8F24500069E16 /* ClassDaysTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClassDaysTableViewController.swift; sourceTree = "<group>"; };
 		A1E861C11CF7A80E0051B4EC /* SchedulesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SchedulesViewController.swift; sourceTree = "<group>"; };
@@ -127,10 +135,11 @@
 			isa = PBXGroup;
 			children = (
 				A12DFD281CF1476E003C4605 /* CourseList.swift */,
-				A1EAA3ED1CFCE5CD00289359 /* Node.swift */,
-				A149B5E11CF2481A00802FE2 /* TimeBlock.swift */,
 				A149B5E31CF2487800802FE2 /* Course.swift */,
+				A1B0E1EF1E0F4A0300B6A83A /* SectionType.swift */,
+				A149B5E11CF2481A00802FE2 /* TimeBlock.swift */,
 				A149B5E51CF24A7500802FE2 /* Section.swift */,
+				A1EAA3ED1CFCE5CD00289359 /* Node.swift */,
 				A1EAA3EF1CFCE60300289359 /* Schedule.swift */,
 			);
 			name = Data;
@@ -184,6 +193,8 @@
 				A149B5E71CF2571100802FE2 /* Data */,
 				A1620BF71CEFE1120033C5E8 /* View Controllers */,
 				A19590031CF9051B00B4EAE9 /* Cells */,
+				A1BD57A21E0DCA7D00AFAD6E /* ScheduleImageHelper.swift */,
+				A1370BA51E1055A0007C98AA /* FilterManager.swift */,
 				A1620BC01CEF84130033C5E8 /* Main.storyboard */,
 				A1620BBC1CEF84130033C5E8 /* AppDelegate.swift */,
 				A1620BC31CEF84130033C5E8 /* Assets.xcassets */,
@@ -220,6 +231,7 @@
 				A152A3581DB68A5000B27EE8 /* DetailedScheduleViewController.swift */,
 				A1EAA3F71CFE638F00289359 /* SingleScheduleTableViewController.swift */,
 				A136588D1D00DA660036C7E3 /* PlannerViewController.swift */,
+				A101EDD01E0EF4E000E2052B /* PopupViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -328,6 +340,7 @@
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = A388CUT837;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 					A1620BCC1CEF84130033C5E8 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -455,9 +468,12 @@
 				A1EAA3FC1CFE82FC00289359 /* ScheduleDetailTableViewCell.swift in Sources */,
 				A19590051CF9055000B4EAE9 /* ClassTimesTableViewController.swift in Sources */,
 				A1F972741DB8494C00C4EFFD /* ProfessorTableViewCell.swift in Sources */,
+				A1B0E1F01E0F4A0300B6A83A /* SectionType.swift in Sources */,
 				A1EAA3F01CFCE60300289359 /* Schedule.swift in Sources */,
+				A1BD57A31E0DCA7D00AFAD6E /* ScheduleImageHelper.swift in Sources */,
 				A1E0BFA41CF8E45300069E16 /* FilterTableViewController.swift in Sources */,
 				A152A3591DB68A5000B27EE8 /* DetailedScheduleViewController.swift in Sources */,
+				A1370BA61E1055A0007C98AA /* FilterManager.swift in Sources */,
 				A1620BF41CEFD6C00033C5E8 /* CourseView.swift in Sources */,
 				A1EAA3F81CFE638F00289359 /* SingleScheduleTableViewController.swift in Sources */,
 				A1620BBD1CEF84130033C5E8 /* AppDelegate.swift in Sources */,
@@ -465,6 +481,7 @@
 				A136588E1D00DA660036C7E3 /* PlannerViewController.swift in Sources */,
 				A1E861C41CF7AC7E0051B4EC /* ScheduleCell.swift in Sources */,
 				A1E861C21CF7A80E0051B4EC /* SchedulesViewController.swift in Sources */,
+				A101EDD11E0EF4E000E2052B /* PopupViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -609,9 +626,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = A388CUT837;
 				INFOPLIST_FILE = "BUtiful Schedules/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "vb.BUtiful-Schedules";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.khemlani.BUtiful-Schedules";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;
@@ -625,9 +643,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = A388CUT837;
 				INFOPLIST_FILE = "BUtiful Schedules/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "vb.BUtiful-Schedules";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.khemlani.BUtiful-Schedules";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;

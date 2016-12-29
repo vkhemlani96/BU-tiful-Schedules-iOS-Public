@@ -15,7 +15,7 @@ class Schedule {
     // getImageURL is almost always called before other functions so nil variables are assigned
     // TODO: don't rely on getImageURL being called (ie. when user is scrolling horizontally through DetailedSchedules
     
-    let node : Node                             // Leaf holding end of schedule
+    let node : CourseNode                       // Leaf holding end of schedule
     fileprivate static var counter = 0          // Counts number of classes total schedule *static*
     let id : Int                                // Represents the index relative to all scheduels
     fileprivate var image : UIImage?            // Stores the image of the schedule to ensure it doesn't have to download it multiple times
@@ -23,13 +23,14 @@ class Schedule {
     fileprivate var isFull : Bool?              // Indicates if any classes are full
     fileprivate var sections = [[[String]]]()   // Sections are stored as ImageURLs are created (to not have to iterate through list twice) and stored for later use
     fileprivate var sectionTypes = [String]()
+    fileprivate var rectangles = [[CGRect]]()
     var courseCount = 0                         // Stores number of courses in schedule
     
     private static let PLANNER_PREFIX = "https://www.bu.edu/link/bin/uiscgi_studentlink.pl/1464900788?ModuleName=reg%2Fadd%2Fbrowse_schedule.pl&SearchOptionDesc=Specific+Class%28es%29&SearchOptionCd=N&ViewSem=Spring+2017&KeySem=20174&AddPlannerInd=Y&CurrentCoreInd=N"
     private static let IMAGE_PREFIX = "http://www.bu.edu/uiszl_j2ee/ScheduleImage/ScheduleImageServlet?"
     
     init (node : Node) {
-        self.node = node            // Leaf unique to schedule
+        self.node = node as! CourseNode            // Leaf unique to schedule
         self.image = nil
         self.imageURL = nil
         self.id = Schedule.counter  // Sets id to index of current schedule
@@ -113,7 +114,8 @@ class Schedule {
             // Updates schedule variable
             courseCount += 1
             self.sections.append(n.value!.getSections())
-            self.sectionTypes.append(n.value!.getSectionType())
+            self.sectionTypes.append(n.value!.getSectionType().getName())
+            self.rectangles = [n.value!.getImageRectangles()] + self.rectangles
             
             // Iterate through sections
             let section = n.value!.getSections()[0]
@@ -171,6 +173,7 @@ class Schedule {
     func downloadImage(_ completion: @escaping ()->Void) {
         
         if let url = URL(string: self.getImageURL()) {
+            print(url)
             getDataFromUrl(url) { (data, response, error)  in
                 DispatchQueue.main.async { () -> Void in
                     guard let data = data , error == nil else {
@@ -189,9 +192,16 @@ class Schedule {
         
     }
     
-    func getImage() -> UIImage? {
-        return image
-    }
+//    func generateImage() -> UIImage? {
+//        let _ = getImageURL();
+//        return ScheduleImageHelper.generateImgFromTimeBlocks(rectangles: rectangles)
+//    }
+//        
+//    func getImage() -> UIImage? {
+//        return generateImage()
+////        return self.image
+//
+//    }
     
     // TODO: consider removing?
     func setImage(_ image: UIImage) {
@@ -210,7 +220,7 @@ class Schedule {
         var n = self.node
         while n.value != nil {
             if let block = n.value {
-                let sectionType = block.getSectionType()
+                let sectionType = block.getSectionType().getName()
                 let courseID = block.getSections()[0][0]
 
                 if let profs = profs {

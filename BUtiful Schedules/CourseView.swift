@@ -125,7 +125,7 @@ class CourseView: UIView {
             
             // If all fields are valid, make the request
             if collegeCount == 3 && deptCount == 2 {
-                CourseList.COURSES[index!] = nil
+                CourseList.COURSES[CourseList.COURSE_IDS[index!]] = nil
                 activityIndicator?.startAnimating()
                 imageIndicator?.isHidden = true
                 controller!.makeGetRequestForCourse(self.getCourseInfo(), viewIndex: index!)

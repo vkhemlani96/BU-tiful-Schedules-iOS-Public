@@ -12,33 +12,26 @@ import UIKit
 // For example, 3 WR 100 sections may be Mon 1-2, Wed 1-2, Fri 1-2
 class TimeBlock {
     
-    fileprivate var course = Course()
     fileprivate var sections = [[String]]() // [["CAS WR 100", "A1", Prof, Seats, Building, Room], ["CAS WR 100", "B1", Prof, Seats, Building, Room], ["CAS WR 100", "C1", Prof, Seats, Building, Room]]
     fileprivate var times = [[Double]]()    // [[StartTime (hours from midnight sunday), EndTime, Day]] => [[37.0, 38.0, 1], [85.0, 86.0, 3], [133.0, 134.0, 5]]
-    fileprivate var sectionType = String()  // Independent, Lecture, Discussion, etc.
     fileprivate var conditions = [String: [String: [String]]]()
+    fileprivate var imageRectangles = [CGRect]()
+    private let sectionType : SectionType
     
     fileprivate let ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     
-    init() {}
-    
     // Can be created with a Course object and the corresponding section type of the sections it holds
-    init(course: Course, sectionType: String) {
-        self.course = course
+    init(sectionType: SectionType) {
         self.sectionType = sectionType
     }
     
     // Usual init, course, sections that fall into time block, times of blocks, section type, conditions for following timeblocks
-    init(course: Course, sections: [[String]], times: [[Double]], sectionType : String, conditions: [String: [String: [String]]]) {
-        self.course = course
+    init(sectionType: SectionType, sections: [[String]], times: [[Double]], conditions: [String: [String: [String]]]) {
         self.sections = sections
         self.times = times
-        self.sectionType = sectionType
         self.conditions = conditions
-    }
-    
-    func getSectionType() -> String {
-        return sectionType
+        self.sectionType = sectionType
+        self.imageRectangles += ScheduleImageHelper.generateRectanglesFromTimes(times: self.times)
     }
     
     func getSections() -> [[String]] {
@@ -64,6 +57,18 @@ class TimeBlock {
         return conditions
     }
     
+    func getImageRectangles() -> [CGRect] {
+        return imageRectangles;
+    }
+    
+    func getSectionType() -> SectionType {
+        return self.sectionType
+    }
+    
+    func getColorIndex() -> Int {
+        return sectionType.getColorIndex()
+    }
+    
     func testPrint() {
         print(sections)
         print(times)
@@ -72,16 +77,18 @@ class TimeBlock {
     
     // Creates new TimeBlock with same properties
     func copy() -> TimeBlock {
-        let copy = TimeBlock(course: course, sections: sections, times: times, sectionType : sectionType, conditions: conditions)
+        let copy = TimeBlock(sectionType: sectionType, sections: sections, times: times, conditions: conditions)
         return copy
     }
     
     // Checks if all time blocks are the same
     func isArrayEqual(_ sectionInfo : [String]) -> Bool {
         let newTimes = TimeBlock.calculateTimes(sectionInfo)
-        for time in newTimes {
-            for oldTime in times {
-                if time != oldTime {
+        
+        // Iterate through each class and check if start and end times are the same
+        for block in 0..<newTimes.count {
+            for part in 0..<2 {
+                if newTimes[block][part] != times[block][part] {
                     return false
                 }
             }
@@ -95,6 +102,7 @@ class TimeBlock {
         // If this is the first section, get its times
         if times.count == 0 {
             times += TimeBlock.calculateTimes(sectionInfo)
+            self.imageRectangles = ScheduleImageHelper.generateRectanglesFromTimes(times: self.times)
         }
         
         // Consolidate necessary info into new array
@@ -106,6 +114,8 @@ class TimeBlock {
             sectionInfo[Section.BUILDING].trim(),
             sectionInfo[Section.ROOM].trim(),
         ]
+        
+        print(section)
         
         // If it has conditions, append it to the consolidated section array
         if sectionInfo.count > Section.CONDITIONS {
@@ -167,7 +177,8 @@ class TimeBlock {
         for cond in foundCond {
             let sectionsRegex = cond.regexMatches("[A-Z]{1}[0-9]{1}")
             var sections = [String]()
-            if let sectionType = course.getSectionType(sectionsRegex[0]) {
+            print(sectionType.getName())
+            if let sectionType = sectionType.getCourse().getSectionType(sectionsRegex[0]) {
                 let letter1 = sectionsRegex[0].trimNums()       // "A" from "A1"
                 let letter2 = sectionsRegex[1].trimNums()       // "C" from "C1"
                 let sectionLetters = ALPHABET.regexMatches("[" + letter1 + "-" + letter2 + "]")[0]  // "A","C" - "ABC"
@@ -237,6 +248,12 @@ class TimeBlock {
         let hours = (Int(time) % 24) * 100  // Int() removes minutes, %24 removes day dependency, appends two zeros
         let mins = Int(time.truncatingRemainder(dividingBy: 1) * 60)    // Take decimal and multiply by 60 to get minutes int
         return hours + mins // Add hours to minutes to get military time as int
+    }
+    
+    subscript(sectionIndex: Int) -> [String] {
+        get {
+            return sections[sectionIndex]
+        }
     }
     
 }
