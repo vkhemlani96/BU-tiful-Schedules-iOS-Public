@@ -10,6 +10,8 @@ target ‘BUtiful Schedules’ do
 	pod 'Kanna',
   	:git => 'https://github.com/tid-kijyun/Kanna.git',
   	:branch => 'swift3.0’
+
+	pod 'PopupDialog', '~> 0.5'
 end
 
 post_install do |installer|

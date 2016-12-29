@@ -1,2 +1,11 @@
 /BUtiful Schedules/PlannerViewController.swift
 /BUtiful Schedules/FilterTableViewController.swift
+/BUtiful Schedules/*.storyboard
+/BUtiful Schedules.xcodeproj
+/BUtiful Schedules.xcworkspace
+/BUtiful SchedulesTests
+/BUtiful SchedulesUITests
+/Pods
+/Frameworks
+/Podfile
+/Podfile.lock
